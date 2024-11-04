@@ -4,19 +4,30 @@ const User = require("../models/user");
 const router = express.Router();
 
 router.get("/signin", (req, res) => {
-  return res.render("signin");
+  return res.render("signin", {
+    error: null,
+  });
 });
 
 router.get("/signup", (req, res) => {
   return res.render("signup");
 });
 
+router.get("/logout", (req, res) => {
+  return res.clearCookie("token").redirect("/");
+});
+
 router.post("/signin", async (req, res) => {
   const { email, password } = req.body;
-  const user = await User.matchPassword(email, password);
+  try {
+    const token = await User.matchPasswordAndGenerateToken(email, password);
 
-  console.log("user111", user);
-  return res.redirect("/");
+    return res.cookie("token", token).redirect("/");
+  } catch (error) {
+    return res.render("signin", {
+      error: "Incorrect Email or Password !!",
+    });
+  }
 });
 
 router.post("/signup", async (req, res) => {

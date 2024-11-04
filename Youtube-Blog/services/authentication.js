@@ -1,21 +1,25 @@
 // const sessionIdToUserMap = new Map();
-const jwt = require("jsonwebtoken");
-const secret = "Harsh123";
+const JWT = require("jsonwebtoken");
+const secret = "$uperMan@123";
 
-const setUser = (user) => {
-  console.log("user", user);
-  return jwt.sign(
-    { _id: user._id, email: user.email, role: user.role },
-    secret
-  );
-  // sessionIdToUserMap.set(id, user);
+const createTokenForUser = (user) => {
+  const payload = {
+    _id: user._id,
+    email: user.email,
+    fullName: user.fullName,
+    profileImageURL: user.profileImageURL,
+    role: user.role,
+  };
+
+  const token = JWT.sign(payload, secret);
+  return token;
 };
 
-const getUser = (token) => {
+const validateToken = (token) => {
   if (!token) return null;
   try {
     // Decode and verify the JWT using the secret
-    return jwt.verify(token, secret);
+    return JWT.verify(token, secret);
   } catch (error) {
     // Log the error for debugging
     console.error("Token verification failed:", error.message);
@@ -25,6 +29,6 @@ const getUser = (token) => {
 };
 
 module.exports = {
-  setUser,
-  getUser,
+  createTokenForUser,
+  validateToken,
 };
